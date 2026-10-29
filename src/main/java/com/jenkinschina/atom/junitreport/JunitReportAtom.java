@@ -85,7 +85,7 @@ public class JunitReportAtom implements AtomTask {
         try (var walk = Files.walk(workspace, 12)) {
             walk.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".xml"))
-                    .filter(path -> matcher.matches(workspace.relativize(path)))
+                    .filter(path -> matcher.matches(workspace.relativize(path)) || matcher.matches(java.nio.file.Path.of("_").resolve(workspace.relativize(path))))
                     .sorted(Comparator.comparing(Path::toString))
                     .limit(2000)
                     .forEach(found::add);

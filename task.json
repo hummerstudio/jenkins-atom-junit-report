@@ -1,7 +1,7 @@
 {
   "atomCode": "junit-report",
   "name": "JUnit test report",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Summarises the JUnit XML a build produced and publishes it as an HTML report on the build page.",
   "execution": {
     "packagePath": "junit-report.jar",
@@ -31,15 +31,35 @@
     }
   },
   "output": {
-    "total": { "type": "string", "description": "用例总数" },
-    "failed": { "type": "string", "description": "失败数" },
-    "errors": { "type": "string", "description": "错误数" },
-    "skipped": { "type": "string", "description": "跳过数" },
-    "durationSeconds": { "type": "string", "description": "用例耗时合计（秒）" },
-    "report": { "type": "report", "description": "构建页内嵌的 HTML 报告" }
+    "total": {
+      "type": "string",
+      "description": "用例总数"
+    },
+    "failed": {
+      "type": "string",
+      "description": "失败数"
+    },
+    "errors": {
+      "type": "string",
+      "description": "错误数"
+    },
+    "skipped": {
+      "type": "string",
+      "description": "跳过数"
+    },
+    "durationSeconds": {
+      "type": "string",
+      "description": "用例耗时合计（秒）"
+    },
+    "report": {
+      "type": "report",
+      "description": "构建页内嵌的 HTML 报告"
+    }
   },
   "x-jenkins": {
     "protocol": "jenkins-1",
-    "requires": { "runner": ">=0.4.0" }
+    "requires": {
+      "runner": ">=0.4.0"
+    }
   }
 }
