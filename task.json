@@ -1,0 +1,45 @@
+{
+  "atomCode": "junit-report",
+  "name": "JUnit test report",
+  "version": "1.0.0",
+  "description": "Summarises the JUnit XML a build produced and publishes it as an HTML report on the build page.",
+  "execution": {
+    "packagePath": "junit-report.jar",
+    "language": "java",
+    "target": "$atom_java_path -cp junit-report.jar com.jenkinschina.atom.sdk.AtomRunner"
+  },
+  "input": {
+    "pattern": {
+      "label": "报告文件（workspace 相对 glob，如 **/surefire-reports/*.xml）",
+      "type": "vuex-input",
+      "default": "**/surefire-reports/*.xml"
+    },
+    "label": {
+      "label": "报告名称",
+      "type": "vuex-input",
+      "default": "Test results"
+    },
+    "outputDir": {
+      "label": "生成的 HTML 放哪里（workspace 相对）",
+      "type": "vuex-input",
+      "default": "out/junit"
+    },
+    "failOnFailure": {
+      "label": "有失败用例就让构建失败",
+      "type": "checkbox",
+      "default": "false"
+    }
+  },
+  "output": {
+    "total": { "type": "string", "description": "用例总数" },
+    "failed": { "type": "string", "description": "失败数" },
+    "errors": { "type": "string", "description": "错误数" },
+    "skipped": { "type": "string", "description": "跳过数" },
+    "durationSeconds": { "type": "string", "description": "用例耗时合计（秒）" },
+    "report": { "type": "report", "description": "构建页内嵌的 HTML 报告" }
+  },
+  "x-jenkins": {
+    "protocol": "jenkins-1",
+    "requires": { "runner": ">=0.4.0" }
+  }
+}

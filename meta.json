@@ -1,0 +1,11 @@
+{
+  "name": "JUnit test report",
+  "summary": "把 junit 插件变成一个原子：解析 JUnit XML、汇总、发布 HTML 报告。",
+  "author": "hummerstudio",
+  "license": "MIT",
+  "tags": [
+    "official-port",
+    "junit"
+  ],
+  "homepage": "https://github.com/hummerstudio/jenkins-atom-junit-report"
+}
