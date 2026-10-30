@@ -130,8 +130,27 @@ public class JunitReportAtom implements AtomTask {
                 return;
             }
 
-            // <testsuites> wrapper: totals per suite
+            // <testsuites> wrapper: totals per suite when there are suites…
             NodeList suites = root.getElementsByTagName("testsuite");
+            if (suites.getLength() == 0) {
+                // …but Node's test runner (and a few others) put <testcase> straight under <testsuites>
+                NodeList cases = root.getElementsByTagName("testcase");
+                for (int i = 0; i < cases.getLength(); i++) {
+                    Element test = (Element) cases.item(i);
+                    summary.total++;
+                    if (test.getElementsByTagName("failure").getLength() > 0) {
+                        summary.failed++;
+                    }
+                    if (test.getElementsByTagName("error").getLength() > 0) {
+                        summary.errors++;
+                    }
+                    if (test.getElementsByTagName("skipped").getLength() > 0) {
+                        summary.skipped++;
+                    }
+                    collectOne(test, failures);
+                }
+                return;
+            }
             for (int i = 0; i < suites.getLength(); i++) {
                 Element suite = (Element) suites.item(i);
                 summary.total += toInt(suite.getAttribute("tests"));
@@ -143,6 +162,28 @@ public class JunitReportAtom implements AtomTask {
             }
         } catch (Exception e) {
             summary.unreadable++;
+        }
+    }
+
+    /** The failing part of a single flat testcase element. */
+    private static void collectOne(Element test, List<Case> failures) {
+        boolean broken = test.getElementsByTagName("failure").getLength() > 0
+                || test.getElementsByTagName("error").getLength() > 0;
+        if (!broken) {
+            return;
+        }
+        String message = "";
+        for (String tag : List.of("failure", "error")) {
+            NodeList nodes = test.getElementsByTagName(tag);
+            if (nodes.getLength() > 0) {
+                Element element = (Element) nodes.item(0);
+                message = firstLine(element.getAttribute("message").isEmpty()
+                        ? element.getTextContent() : element.getAttribute("message"));
+                break;
+            }
+        }
+        if (failures.size() < 200) {
+            failures.add(new Case(test.getAttribute("classname"), test.getAttribute("name"), "failure", message));
         }
     }
 
