@@ -31,14 +31,22 @@ public class JunitReportAtom implements AtomTask {
 
     @Override
     public AtomResult run(AtomContext context) throws Exception {
-        String pattern = context.getParam("pattern", "**/surefire-reports/*.xml");
+        // the plugin calls it testResults; "pattern" stays as an alias for the earlier atom versions
+        String pattern = context.getParam("testResults", context.getParam("pattern", "**/surefire-reports/*.xml"));
         String label = context.getParam("label", "Test results");
         String outDir = context.getParam("outputDir", "out/junit");
         boolean failOnFailure = context.getBooleanParam("failOnFailure", false);
+        boolean allowEmptyResults = context.getBooleanParam("allowEmptyResults", false);
+        boolean skipMarkingUnstable = context.getBooleanParam("skipMarkingUnstable", false);
         Path workspace = context.getWorkspace();
 
         List<Path> files = find(workspace, pattern);
         if (files.isEmpty()) {
+            if (allowEmptyResults) {
+                context.log("[junit] no report matched " + pattern + "; allowEmptyResults is on");
+                return AtomResult.success()
+                        .data("total", "0").data("failed", "0").data("errors", "0").data("skipped", "0");
+            }
             return AtomResult.error(ErrorType.USER, 40001, "no test report matched " + pattern
                     + " under " + workspace);
         }
@@ -66,6 +74,11 @@ public class JunitReportAtom implements AtomTask {
                 .report("report", label, dir.toString(), "index.html");
 
         boolean broken = summary.failed > 0 || summary.errors > 0;
+        // the plugin marks the build UNSTABLE on failures; that is the default here too, and it is separate from the
+        // step's own success/failure
+        if (broken && !skipMarkingUnstable) {
+            result.markUnstable();
+        }
         if (broken && failOnFailure) {
             return AtomResult.failure(summary.failed + " failed, " + summary.errors + " errors")
                     .data("total", String.valueOf(summary.total))

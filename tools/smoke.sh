@@ -43,6 +43,25 @@ grep -q '"failed":{"type":"string","value":"1"}' "$dir/output.json" || fail "fai
 grep -q '"errors":{"type":"string","value":"1"}' "$dir/output.json" || fail "error count"
 grep -q '"skipped":{"type":"string","value":"1"}' "$dir/output.json" || fail "skipped count"
 grep -q '"type":"report"' "$dir/output.json" || fail "report output missing"
+grep -q '"build.result":{"type":"string","value":"UNSTABLE"}' "$dir/output.json" \
+  || fail "a failing report must ask for UNSTABLE: $(cat "$dir/output.json")"
+
+# and skipMarkingUnstable takes that request away
+dir2="$(mktemp -d)"; mkdir -p "$dir2/reports"
+cat >"$dir2/reports/x.xml" <<'XML'
+<testsuite tests="1" failures="1" errors="0" skipped="0" time="0.1">
+  <testcase classname="demo.D" name="red"><failure message="nope"/></testcase>
+</testsuite>
+XML
+printf '{"testResults": "reports/*.xml", "skipMarkingUnstable": "true"}' >"$dir2/input.json"
+run "$dir2" >/dev/null 2>&1 || fail "skipMarkingUnstable run failed"
+grep -q 'build.result' "$dir2/output.json" && fail "skipMarkingUnstable must not request UNSTABLE"
+
+# allowEmptyResults turns a missing report into zeros
+dir3="$(mktemp -d)"
+printf '{"testResults": "**/nope.xml", "allowEmptyResults": "true"}' >"$dir3/input.json"
+run "$dir3" >/dev/null 2>&1 || fail "allowEmptyResults run failed: $(cat "$dir3/output.json")"
+grep -q '"total":{"type":"string","value":"0"}' "$dir3/output.json" || fail "allowEmptyResults total: $(cat "$dir3/output.json")"
 [ -f "$dir/out/junit/index.html" ] || fail "no HTML report written"
 grep -q "demo.A#fails" "$dir/out/junit/index.html" || fail "failing test not listed"
 grep -q "connection refused" "$dir/out/junit/index.html" || fail "error message not listed"
