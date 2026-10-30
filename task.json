@@ -1,7 +1,7 @@
 {
   "atomCode": "junit-report",
   "name": "JUnit test report",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Summarises the JUnit XML a build produced and publishes it as an HTML report on the build page.",
   "execution": {
     "packagePath": "junit-report.jar",

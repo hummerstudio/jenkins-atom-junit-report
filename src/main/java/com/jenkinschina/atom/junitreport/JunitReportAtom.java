@@ -4,12 +4,11 @@ import com.jenkinschina.atom.sdk.AtomContext;
 import com.jenkinschina.atom.sdk.AtomResult;
 import com.jenkinschina.atom.sdk.AtomTask;
 import com.jenkinschina.atom.sdk.ErrorType;
+import com.jenkinschina.atom.sdk.Glob;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -90,20 +89,9 @@ public class JunitReportAtom implements AtomTask {
         return result;
     }
 
-    /** Glob over the workspace, newest first, capped so a runaway directory tree cannot hang a build. */
+    /** Glob over the workspace via the SDK, capped so a runaway directory tree cannot hang a build. */
     private static List<Path> find(Path workspace, String pattern) throws IOException {
-        String glob = pattern.contains("/") ? pattern : "**/" + pattern;
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
-        List<Path> found = new ArrayList<>();
-        try (var walk = Files.walk(workspace, 12)) {
-            walk.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".xml"))
-                    .filter(path -> matcher.matches(workspace.relativize(path)) || matcher.matches(java.nio.file.Path.of("_").resolve(workspace.relativize(path))))
-                    .sorted(Comparator.comparing(Path::toString))
-                    .limit(2000)
-                    .forEach(found::add);
-        }
-        return found;
+        return Glob.find(workspace, pattern);
     }
 
     private static void read(Path file, Summary summary, List<Case> failures) {
