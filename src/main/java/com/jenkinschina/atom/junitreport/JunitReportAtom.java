@@ -60,8 +60,8 @@ public class JunitReportAtom implements AtomTask {
             // the plugin shows the count in its report and keeps the build green; a step that reports
             // "0 tests, all good" for a file it could not parse is worse than a red build
             return AtomResult.error(ErrorType.USER, 40003,
-                    summary.unreadable + " of " + files.size() + " report(s) could not be parsed (set"
-                            + " allowUnreadableReports=true to accept this)");
+                    summary.unreadable + " of " + files.size() + " report(s) could not be parsed: "
+                            + summary.firstUnreadable + " (set allowUnreadableReports=true to accept this)");
         }
 
         Path dir = workspace.resolve(outDir);
@@ -158,6 +158,10 @@ public class JunitReportAtom implements AtomTask {
             }
         } catch (Exception e) {
             summary.unreadable++;
+            if (summary.firstUnreadable == null) {
+                // name the file: "1 of 3 reports could not be parsed" alone leaves the caller guessing
+                summary.firstUnreadable = file.getFileName() + ": " + e.getMessage();
+            }
         }
     }
 
@@ -301,6 +305,7 @@ public class JunitReportAtom implements AtomTask {
         int errors;
         int skipped;
         int unreadable;
+        String firstUnreadable;
         double seconds;
     }
 }
