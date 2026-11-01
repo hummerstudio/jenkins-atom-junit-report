@@ -90,4 +90,14 @@ JSON
 if run "$dir" >/dev/null 2>&1; then fail "missing reports must fail the atom"; fi
 grep -q 'no test report matched' "$dir/output.json" || fail "message is not readable: $(cat "$dir/output.json")"
 
-echo "smoke ok: totals, failure list, failOnFailure, missing reports"
+# 4. a report that never parsed is not a passing build, unless the caller opts in
+dir="$(mktemp -d)"; mkdir -p "$dir/reports"
+printf '<testsuite><testcase name="half' >"$dir/reports/truncated.xml"
+printf '{"pattern": "reports/*.xml", "outputDir": "out/junit"}' >"$dir/input.json"
+if run "$dir" >/dev/null 2>&1; then fail "a truncated report must fail the step"; fi
+grep -q '"errorCode":40003' "$dir/output.json" || fail "expected errorCode 40003: $(cat "$dir/output.json")"
+printf '{"pattern": "reports/*.xml", "outputDir": "out/junit", "allowUnreadableReports": "true"}' >"$dir/input.json"
+run "$dir" >/dev/null 2>&1 || fail "allowUnreadableReports should let it through: $(cat "$dir/output.json")"
+grep -q '"total":{"type":"string","value":"0"}' "$dir/output.json" || fail "opt-in total: $(cat "$dir/output.json")"
+
+echo "smoke ok: totals, failure list, failOnFailure, missing reports, unreadable report fails by default, opt-in keeps going"

@@ -37,6 +37,7 @@ public class JunitReportAtom implements AtomTask {
         boolean failOnFailure = context.getBooleanParam("failOnFailure", false);
         boolean allowEmptyResults = context.getBooleanParam("allowEmptyResults", false);
         boolean skipMarkingUnstable = context.getBooleanParam("skipMarkingUnstable", false);
+        boolean allowUnreadable = context.getBooleanParam("allowUnreadableReports", false);
         Path workspace = context.getWorkspace();
 
         List<Path> files = find(workspace, pattern);
@@ -54,6 +55,13 @@ public class JunitReportAtom implements AtomTask {
         List<Case> failures = new ArrayList<>();
         for (Path file : files) {
             read(file, summary, failures);
+        }
+        if (summary.unreadable > 0 && !allowUnreadable) {
+            // the plugin shows the count in its report and keeps the build green; a step that reports
+            // "0 tests, all good" for a file it could not parse is worse than a red build
+            return AtomResult.error(ErrorType.USER, 40003,
+                    summary.unreadable + " of " + files.size() + " report(s) could not be parsed (set"
+                            + " allowUnreadableReports=true to accept this)");
         }
 
         Path dir = workspace.resolve(outDir);
