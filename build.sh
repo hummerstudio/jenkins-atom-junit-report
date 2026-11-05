@@ -35,9 +35,9 @@ mkdir -p "$classes/META-INF/services"
 cp src/main/resources/META-INF/services/* "$classes/META-INF/services/"
 ( cd "$sdk" && "$JAR" xf "$SDK_JAR" && rm -rf META-INF/MANIFEST.MF META-INF/services )
 
-rm -rf dist/junit-report
-mkdir -p dist/junit-report
-"$JAR" --create --file dist/junit-report/junit-report.jar -C "$classes" . -C "$sdk" .
-cp task.json dist/junit-report/
-[ -f meta.json ] && cp meta.json dist/junit-report/
-echo "built dist/junit-report: $(ls dist/junit-report | tr '\n' ' ')"
+rm -rf dist/junit
+mkdir -p dist/junit
+"$JAR" --create --file dist/junit/junit.jar -C "$classes" . -C "$sdk" .
+cp task.json dist/junit/
+[ -f meta.json ] && cp meta.json dist/junit/
+echo "built dist/junit: $(ls dist/junit | tr '\n' ' ')"

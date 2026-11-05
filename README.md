@@ -1,4 +1,4 @@
-# jenkins-atom-junit-report
+# jenkins-atom-junit
 
 The [junit](https://plugins.jenkins.io/junit/) plugin (≈226k installations) as an **atom**: read the XML your build
 already produced, summarise it, publish a report on the build page.
@@ -17,6 +17,6 @@ UI host, not another atom.
 ## Build and smoke test
 
 ```bash
-./build.sh             # → dist/junit-report/{junit-report.jar,task.json}, SDK inside
+./build.sh             # → dist/junit/{junit.jar,task.json}, SDK inside
 ./tools/smoke.sh       # two XML shapes, failure table, failOnFailure, missing reports
 ```

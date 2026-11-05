@@ -1,4 +1,4 @@
-package com.jenkinschina.atom.junitreport;
+package com.jenkinschina.atom.junit;
 
 import com.jenkinschina.atom.sdk.AtomContext;
 import com.jenkinschina.atom.sdk.AtomResult;
@@ -26,7 +26,7 @@ import org.w3c.dom.NodeList;
  * without the plugin. What it does not do is Jenkins' own "test result trend" page: that lives in the job sidebar,
  * which is a UI host we have not built yet.
  */
-public class JunitReportAtom implements AtomTask {
+public class JunitAtom implements AtomTask {
 
     @Override
     public AtomResult run(AtomContext context) throws Exception {

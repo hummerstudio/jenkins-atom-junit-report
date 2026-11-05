@@ -1,12 +1,12 @@
 {
-  "atomCode": "junit-report",
-  "name": "JUnit test report",
+  "atomCode": "junit",
+  "name": "JUnit",
   "version": "1.3.2",
   "description": "Summarises the JUnit XML a build produced and publishes it as an HTML report on the build page.",
   "execution": {
-    "packagePath": "junit-report.jar",
+    "packagePath": "junit.jar",
     "language": "java",
-    "target": "$atom_java_path -cp junit-report.jar com.jenkinschina.atom.sdk.AtomRunner"
+    "target": "$atom_java_path -cp junit.jar com.jenkinschina.atom.sdk.AtomRunner"
   },
   "input": {
     "testResults": {

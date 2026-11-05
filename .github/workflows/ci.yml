@@ -27,5 +27,5 @@ jobs:
         run: ./tools/smoke.sh
       - uses: actions/upload-artifact@v4
         with:
-          name: junit-report-atom
-          path: dist/junit-report/
+          name: junit-atom
+          path: dist/junit/
