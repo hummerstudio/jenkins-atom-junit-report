@@ -17,6 +17,5 @@ UI host, not another atom.
 ## Build and smoke test
 
 ```bash
-./build.sh             # → dist/junit/{junit.jar,task.json}, SDK inside
-./tools/smoke.sh       # two XML shapes, failure table, failOnFailure, missing reports
+mvn verify    # → dist/junit/{junit.jar,task.json}, SDK inside; runs src/test/java/atom/JunitReportIT.java
 ```
