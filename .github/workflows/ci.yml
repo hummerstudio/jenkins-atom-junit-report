@@ -37,4 +37,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: junit-atom
-          path: atom/dist/junit/
+          path: atom/target/dist/junit/
